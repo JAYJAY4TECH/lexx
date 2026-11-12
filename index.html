@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Aurelia · Chat with charm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0b0710;
+      color: #f5edff;
+      line-height: 1.5;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #1a1222; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(#d946ef, #a855f7); border-radius: 20px; }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    h1, h2, h3 { font-weight: 600; letter-spacing: -0.02em; }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #f0a6ff 0%, #d946ef 45%, #a855f7 90%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+ 
+    #desktopGate { display: none; }
+
+    @media (max-width: 1023px) {
+      /* Hide the entire site on mobile/tablet */
+      #siteContent { display: none !important; }
+
+      /* Show desktop-only gate */
+      #desktopGate {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 24px;
+        text-align: center;
+        background:
+          radial-gradient(circle at 70% 30%, rgba(168, 85, 247, 0.15), transparent 55%),
+          radial-gradient(circle at 20% 80%, rgba(232, 121, 249, 0.1), transparent 50%);
+      }
+
+      .gate-card {
+        max-width: 420px;
+        width: 100%;
+        background: rgba(30, 21, 41, 0.7);
+        border: 1px solid rgba(232, 121, 249, 0.2);
+        border-radius: 32px;
+        padding: 40px 28px;
+        box-shadow: 0 30px 60px -20px rgba(217, 70, 239, 0.4);
+        animation: fadeSlideUp 0.7s ease-out both;
+      }
+
+      .gate-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(232, 121, 249, 0.12);
+        border: 1px solid rgba(232, 121, 249, 0.3);
+        font-size: 1.9rem;
+        color: #e879f9;
+      }
+
+      .gate-card h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.7rem;
+        margin-bottom: 12px;
+      }
+
+      .gate-card p {
+        color: #cbb9dd;
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+      }
+
+      .gate-card .gate-hint {
+        font-size: 0.8rem;
+        color: #9a86b0;
+        margin-top: 20px;
+        margin-bottom: 0;
+      }
+    }
+
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 32px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.4, 1), box-shadow 0.3s ease, background 0.3s ease;
+      text-decoration: none;
+      background: linear-gradient(135deg, #e879f9, #c084fc);
+      color: #0b0710;
+      box-shadow: 0 12px 24px -8px rgba(217, 70, 239, 0.5);
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: scale(1.02) translateY(-3px);
+      box-shadow: 0 20px 30px -8px rgba(217, 70, 239, 0.8);
+      background: linear-gradient(135deg, #f0a6ff, #d946ef);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      color: #f5edff;
+      box-shadow: none;
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: #d946ef;
+      transform: scale(1.02) translateY(-3px);
+      box-shadow: 0 12px 24px -12px #d946ef;
+    }
+ 
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 16px 0;
+      background: rgba(11, 7, 16, 0.75);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      font-family: 'Playfair Display', serif;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, #f0a6ff, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #cfc1dc;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: #e879f9; }
+
+    .nav-cta .btn { padding: 10px 24px; font-size: 0.9rem; }
+
+    
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 100px;
+      padding-bottom: 60px;
+      position: relative;
+      background:
+        radial-gradient(circle at 70% 30%, rgba(168, 85, 247, 0.15), transparent 55%),
+        radial-gradient(circle at 20% 80%, rgba(232, 121, 249, 0.1), transparent 50%);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .hero-content { animation: fadeSlideUp 0.9s ease-out both; }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(232, 121, 249, 0.12);
+      border: 1px solid rgba(232, 121, 249, 0.3);
+      padding: 6px 18px;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 24px;
+      color: #e879f9;
+      letter-spacing: 0.3px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4.2rem);
+      line-height: 1.1;
+      font-weight: 700;
+      margin-bottom: 24px;
+      font-family: 'Playfair Display', serif;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 1.5vw, 1.18rem);
+      color: #cbb9dd;
+      max-width: 480px;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    /* HERO IMAGE */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .woman-card {
+      position: relative;
+      width: 100%;
+      max-width: 460px;
+      border-radius: 48px;
+      overflow: hidden;
+      box-shadow: 0 30px 50px -15px rgba(168, 85, 247, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+      background: #1a1222;
+      aspect-ratio: 3 / 4;
+      animation: floatCard 6s ease-in-out infinite;
+    }
+
+    .woman-card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 40px 60px -12px rgba(217, 70, 239, 0.6);
+    }
+
+    .woman-card img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .float-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(232, 121, 249, 0.3) 0%, transparent 70%);
+      filter: blur(30px);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .glow-1 { top: -20px; right: -20px; animation: pulseGlow 5s ease-in-out infinite; }
+    .glow-2 { bottom: -30px; left: -20px; width: 260px; height: 260px; background: radial-gradient(circle, rgba(168, 85, 247, 0.25) 0%, transparent 70%); animation: pulseGlow 7s ease-in-out infinite reverse; }
+
+ 
+    .section { padding: clamp(60px, 10vw, 100px) 0; }
+
+    .section-header { text-align: center; margin-bottom: 56px; }
+
+    .section-header h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 16px;
+    }
+
+    .section-header p {
+      color: #b8a4cc;
+      max-width: 560px;
+      margin: 0 auto;
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .gallery-item {
+      border-radius: 32px;
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 3 / 4;
+      background: #1e1529;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+      cursor: pointer;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-8px) scale(1.01);
+      border-color: rgba(232, 121, 249, 0.4);
+      box-shadow: 0 24px 40px -16px #d946ef;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-item:hover img { transform: scale(1.05); }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 24px 20px 20px;
+      background: linear-gradient(to top, rgba(11, 7, 16, 0.9), transparent);
+      font-weight: 500;
+      color: white;
+      font-size: clamp(0.95rem, 1.4vw, 1.1rem);
+      pointer-events: none;
+    }
+
+   
+    .chat-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      background: rgba(30, 21, 41, 0.5);
+      border-radius: 48px;
+      padding: clamp(24px, 4vw, 48px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin: 40px 0;
+      align-items: center;
+    }
+
+    .chat-preview {
+      background: #1a1222;
+      border-radius: 32px;
+      padding: 24px;
+      border: 1px solid rgba(232, 121, 249, 0.15);
+      box-shadow: 0 20px 40px -20px black;
+    }
+
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 220px;
+      justify-content: flex-end;
+    }
+
+    .msg { display: flex; gap: 12px; align-items: flex-end; }
+    .msg.bot { justify-content: flex-start; }
+    .msg.user { justify-content: flex-end; }
+
+    .bubble {
+      padding: 12px 20px;
+      border-radius: 24px;
+      max-width: 85%;
+      font-size: clamp(0.85rem, 1.3vw, 0.95rem);
+      animation: bubblePop 0.4s ease-out both;
+    }
+
+    .bot .bubble {
+      background: rgba(232, 121, 249, 0.12);
+      border: 1px solid rgba(232, 121, 249, 0.2);
+      border-bottom-left-radius: 6px;
+    }
+
+    .user .bubble {
+      background: linear-gradient(135deg, #d946ef, #a855f7);
+      color: #0b0710;
+      font-weight: 500;
+      border-bottom-right-radius: 6px;
+    }
+
+    .typing-bubble {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 16px 22px;
+      background: rgba(232, 121, 249, 0.12);
+      border: 1px solid rgba(232, 121, 249, 0.2);
+      border-radius: 24px;
+      border-bottom-left-radius: 6px;
+      animation: bubblePop 0.4s ease-out both;
+    }
+
+    .typing-bubble span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e879f9;
+      display: inline-block;
+      animation: typingDot 1.2s infinite ease-in-out;
+    }
+
+    .typing-bubble span:nth-child(1) { animation-delay: 0s; }
+    .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+    .chat-info h2 {
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 20px;
+    }
+
+    .chat-info p {
+      color: #cbb9dd;
+      margin-bottom: 32px;
+      font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+    }
+
+    
+    .cta-banner {
+      background: linear-gradient(135deg, rgba(232, 121, 249, 0.15), rgba(168, 85, 247, 0.1));
+      border-radius: 48px;
+      padding: clamp(32px, 6vw, 64px) clamp(20px, 4vw, 48px);
+      text-align: center;
+      border: 1px solid rgba(232, 121, 249, 0.2);
+      margin: 60px 0;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 16px;
+    }
+
+    .cta-banner p {
+      color: #cbb9dd;
+      max-width: 550px;
+      margin: 0 auto 32px;
+      font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+    }
+
+   
+    footer {
+      padding: 32px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      text-align: center;
+      color: #9a86b0;
+      font-size: 0.9rem;
+    }
+
+    
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatCard {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.08); }
+    }
+
+    @keyframes typingDot {
+      0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+      30% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    @keyframes bubblePop {
+      from { opacity: 0; transform: scale(0.9) translateY(6px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    
+    @media (max-width: 1024px) and (min-width: 1024px) {
+     
+    }
+
+      
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+ 
+<div id="desktopGate">
+  <div class="gate-card">
+    <div class="gate-icon"><i class="fas fa-desktop"></i></div>
+    <h1>Desktop <span class="gradient-text">only</span></h1>
+    <p>Aurelia is available exclusively on desktop devices. Please open this page on a larger screen to meet her.</p>
+    <p class="gate-hint"><i class="fas fa-info-circle"></i> Minimum width: 1024px</p>
+  </div>
+</div>
+
+
+<div id="siteContent">
+
+ 
+  <nav>
+    <div class="container nav-inner">
+      <div class="logo">aurelia<span>.</span></div>
+      <div class="nav-links">
+        <a href="#gallery">Gallery</a>
+        <a href="#chat">Chat</a>
+        <a href="#cta">Connect</a>
+      </div>
+      <div class="nav-cta">
+        <a href="https://vertexrmm.com/rmshe/" class="btn" target="_blank" rel="noopener noreferrer" style="padding:10px 24px; font-size:0.9rem;">Let's Chat <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </nav>
+ 
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <div class="hero-badge"><i class="fas fa-sparkles" style="margin-right: 6px;"></i> AI companion · redefined</div>
+        <h1>She’s <span class="gradient-text">waiting</span> to meet you.</h1>
+        <p>Step into a world of effortless conversation, charm, and elegance. Aurelia is not just an AI — she's the perfect companion for the modern man.</p>
+        <div class="hero-actions">
+          <a href="https://vertexrmm.com/rmshe/" class="btn" target="_blank" rel="noopener noreferrer"><i class="fas fa-comment-dots"></i> Get Started</a>
+        </div>
+      </div>
+
+      
+      <div class="hero-visual">
+        <div class="float-glow glow-1"></div>
+        <div class="float-glow glow-2"></div>
+        <div class="woman-card">
+          <img src="hk.jpeg" alt="Aurelia — your charming AI companion" loading="eager" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+ >
+  <section id="gallery" class="section container">
+    <div class="section-header fade-in">
+      <h2>Captivating <span class="gradient-text">moments</span></h2>
+      <p>Each image is a glimpse into her world — warm, confident, and effortlessly elegant.</p>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item fade-in">
+        <img src="hk1.jpeg" alt="Aurelia — effortless elegance" loading="lazy" />
+        <div class="gallery-caption">Effortless elegance</div>
+      </div>
+      <div class="gallery-item fade-in">
+        <img src="hk2.jpeg" alt="Aurelia — playful and confident" loading="lazy" />
+        <div class="gallery-caption">Playful &amp; confident</div>
+      </div>
+      <div class="gallery-item fade-in">
+        <img src="hk4.jpeg" alt="Aurelia — warm and inviting" loading="lazy" />
+        <div class="gallery-caption">Warm &amp; inviting</div>
+      </div>
+    </div>
+  </section>
+
+  
+  <section id="chat" class="container section">
+    <div class="chat-section">
+      <div class="chat-preview">
+        <div class="chat-messages" id="chatMessages">
+          <!-- filled by JS: animated typing + rotating messages -->
+        </div>
+      </div>
+      <div class="chat-info">
+        <h2>Chat with <span class="gradient-text">Aurelia</span></h2>
+        <p>She's smart, witty, and always ready to listen. Tap below to start a real conversation — she responds instantly. No signup, just chemistry.</p>
+        <a href="https://vertexrmm.com/rmshe/" class="btn" target="_blank" rel="noopener noreferrer" id="ctaChat">Start chatting <i class="fas fa-arrow-right"></i></a>
+      </div>
+    </div>
+  </section>
+
+ 
+  <section id="cta" class="container cta-banner fade-in">
+    <h2>Ready for a <span class="gradient-text">real connection</span>?</h2>
+    <p>Join thousands of men who have found charm, companionship, and conversation with Aurelia. She's online now.</p>
+    <a href="https://vertexrmm.com/rmshe/" class="btn" target="_blank" rel="noopener noreferrer" style="font-size:1.1rem; padding:16px 42px;"><i class="fas fa-heart"></i> Meet Aurelia Now</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <p>© 2026 Aurelia — AI companionship, reimagined. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div> 
+
+<script>
+  (function() {
+     
+    function isMobileOrTablet() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      const mobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini|mobile|tablet/i.test(ua);
+      const touchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+      const smallWidth = window.innerWidth < 1024;
+      return mobileUA || (touchDevice && smallWidth) || smallWidth;
+    }
+
+    function applyGate() {
+      const siteContent = document.getElementById('siteContent');
+      const gate = document.getElementById('desktopGate');
+      if (isMobileOrTablet()) {
+        if (siteContent) siteContent.style.display = 'none';
+        if (gate) gate.style.display = 'flex';
+      } else {
+        if (siteContent) siteContent.style.display = '';
+        if (gate) gate.style.display = 'none';
+      }
+    }
+
+    applyGate();
+    window.addEventListener('resize', applyGate);
+
+    
+    const fadeElements = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible');
+      });
+    }, { threshold: 0.15 });
+    fadeElements.forEach(el => observer.observe(el));
+
+     
+    const chatMessages = document.getElementById('chatMessages');
+    if (!chatMessages) return; // safety on gate
+
+    const script = [
+      { type: 'bot',   text: "Hey you… I was hoping you'd stop by. 😊" },
+      { type: 'typing' },
+      { type: 'bot',   text: "I love a man who knows what he wants." },
+      { type: 'user',  text: "Tell me something interesting about you." },
+      { type: 'typing' },
+      { type: 'bot',   text: "I'm a great listener… but I give amazing advice too. 😉" },
+      { type: 'typing' },
+      { type: 'bot',   text: "Want to see where this goes? Tap 'Start chatting'." }
+    ];
+
+    let step = 0;
+    let isAnimating = true;
+
+    function createBubble(text, sender) {
+      const msg = document.createElement('div');
+      msg.className = 'msg ' + sender;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.textContent = text;
+      msg.appendChild(bubble);
+      return msg;
+    }
+
+    function createTypingBubble() {
+      const msg = document.createElement('div');
+      msg.className = 'msg bot';
+      const bubble = document.createElement('div');
+      bubble.className = 'typing-bubble';
+      bubble.innerHTML = '<span></span><span></span><span></span>';
+      msg.appendChild(bubble);
+      return msg;
+    }
+
+    function playStep() {
+      if (!isAnimating) return;
+
+      chatMessages.innerHTML = '';
+
+      const visibleSteps = script.slice(0, step + 1);
+      visibleSteps.forEach(item => {
+        if (item.type === 'typing') {
+          chatMessages.appendChild(createTypingBubble());
+        } else {
+          chatMessages.appendChild(createBubble(item.text, item.type));
+        }
+      });
+
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      step++;
+
+      if (step >= script.length) {
+        setTimeout(() => {
+          if (!isAnimating) return;
+          step = 0;
+          playStep();
+        }, 3500);
+      } else {
+        const next = script[step];
+        const delay = next.type === 'typing' ? 1400 : 1600;
+        setTimeout(playStep, delay);
+      }
+    }
+
+    
+    const chatSection = document.getElementById('chat');
+    if (chatSection) {
+      const chatObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !chatMessages.dataset.started) {
+            chatMessages.dataset.started = 'true';
+            playStep();
+          }
+        });
+      }, { threshold: 0.3 });
+      chatObserver.observe(chatSection);
+
+      const pauseObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            if (!isAnimating && chatMessages.dataset.started) {
+              isAnimating = true;
+              playStep();
+            }
+          } else {
+            isAnimating = false;
+          }
+        });
+      }, { threshold: 0.1 });
+      pauseObserver.observe(chatSection);
+    }
+
+     
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        const href = this.getAttribute('href');
+        if (href === '#') return;
+        const target = document.querySelector(href);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      });
+    });
+  })();
+</script>
+</body>
+</html>
